@@ -17,78 +17,91 @@
  * under the License.
  */
 var app = {
-    // Application Constructor
-    initialize: function () {
-        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
-    },
+        // Application Constructor
+        initialize: function () {
+            document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+        },
 
-    // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
-    // 'pause', 'resume', etc.
-    onDeviceReady: function () {
-        this.receivedEvent('deviceready');
-        console.log(navigator.vibrate);
-        this.fastClick();
+        // deviceready Event Handler
+        //
+        // Bind any cordova events here. Common events are:
+        // 'pause', 'resume', etc.
+        onDeviceReady: function () {
+            this.receivedEvent('deviceready');
+            console.log(navigator.vibrate);
+            this.fastClick();
+            this.addLocation();
+            // navigator.notification.alert("Hola");
+            // document.addEventListener('deviceready', function () {
+            //     if (navigator.notification) { // Override default HTML alert with native dialog
+            //         window.alert = function (message) {
+            //             navigator.notification.alert(
+            //                 message,    // message
+            //                 null,       // callback
+            //                 "Workshop", // title
+            //                 'OK'        // buttonName
+            //             );
+            //         };
+            //     }
+            // }, false);
+            this.changePicture();
+        },
 
-        // navigator.notification.alert("Hola");
-        // document.addEventListener('deviceready', function () {
-        //     if (navigator.notification) { // Override default HTML alert with native dialog
-        //         window.alert = function (message) {
-        //             navigator.notification.alert(
-        //                 message,    // message
-        //                 null,       // callback
-        //                 "Workshop", // title
-        //                 'OK'        // buttonName
-        //             );
-        //         };
-        //     }
-        // }, false);
-        this.changePicture();
-    },
+
+        fastClick: function () {
+            FastClick.attach(document.body)
+        },
+
+        changePicture: function () {
+            //event.preventDefault();
+            if (!navigator.camera) {
+                alert("Camera API not supported", "Error");
+                return;
+            }
+            var options = {
+                quality: 50,
+                destinationType: Camera.DestinationType.DATA_URL,
+                sourceType: 1,      // 0:Photo Library, 1=Camera, 2=Saved Album
+                encodingType: 0     // 0=JPG 1=PNG
+            };
+
+            navigator.camera.getPicture(
+                function (imgData) {
+                    $('.media-object', this.$el).attr('src', "data:image/jpeg;base64," + imgData);
+                },
+                function () {
+                    alert('Error taking picture', 'Error');
+                },
+                options);
+
+            return false;
+        },
+
+        addLocation: function () {
+            //event.preventDefault();
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    alert(position.coords.latitude + ',' + position.coords.longitude);
+                },
+                function () {
+                    alert('Error getting location');
+                });
+            return false;
+        },
 
 
-    fastClick: function () {
-        FastClick.attach(document.body)
-    },
+        // Update DOM on a Received Event
+        receivedEvent: function (id) {
+            var parentElement = document.getElementById(id);
+            var listeningElement = parentElement.querySelector('.listening');
+            var receivedElement = parentElement.querySelector('.received');
 
-    changePicture: function (event) {
-        event.preventDefault();
-        if (!navigator.camera) {
-            alert("Camera API not supported", "Error");
-            return;
+            listeningElement.setAttribute('style', 'display:none;');
+            receivedElement.setAttribute('style', 'display:block;');
+
+            console.log('Received Event: ' + id);
         }
-        var options = {
-            quality: 50,
-            destinationType: Camera.DestinationType.DATA_URL,
-            sourceType: 1,      // 0:Photo Library, 1=Camera, 2=Saved Album
-            encodingType: 0     // 0=JPG 1=PNG
-        };
-
-        navigator.camera.getPicture(
-            function (imgData) {
-                $('.media-object', this.$el).attr('src', "data:image/jpeg;base64," + imgData);
-            },
-            function () {
-                alert('Error taking picture', 'Error');
-            },
-            options);
-
-        return false;
-    },
-
-
-    // Update DOM on a Received Event
-    receivedEvent: function (id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
     }
-};
+    ;
 
 app.initialize();
