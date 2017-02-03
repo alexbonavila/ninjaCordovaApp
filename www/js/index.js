@@ -27,8 +27,20 @@ var app = {
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
-        navigator.notification.alert("Hola");
         this.receivedEvent('deviceready');
+        navigator.notification.alert("Hola");
+        document.addEventListener('deviceready', function () {
+            if (navigator.notification) { // Override default HTML alert with native dialog
+                window.alert = function (message) {
+                    navigator.notification.alert(
+                        message,    // message
+                        null,       // callback
+                        "Workshop", // title
+                        'OK'        // buttonName
+                    );
+                };
+            }
+        }, false);
     },
 
     // Update DOM on a Received Event
