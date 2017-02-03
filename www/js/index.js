@@ -28,7 +28,9 @@ var app = {
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
+        console.log(navigator.vibrate);
         this.fastClick();
+
         // navigator.notification.alert("Hola");
         // document.addEventListener('deviceready', function () {
         //     if (navigator.notification) { // Override default HTML alert with native dialog
