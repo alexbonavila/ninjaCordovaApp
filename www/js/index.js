@@ -18,7 +18,7 @@
  */
 var app = {
     // Application Constructor
-    initialize: function() {
+    initialize: function () {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
     },
 
@@ -26,7 +26,7 @@ var app = {
     //
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
-    onDeviceReady: function() {
+    onDeviceReady: function () {
         this.receivedEvent('deviceready');
         console.log(navigator.vibrate);
         this.fastClick();
@@ -44,17 +44,42 @@ var app = {
         //         };
         //     }
         // }, false);
+        this.changePicture();
     },
 
 
-    fastClick: function(){
+    fastClick: function () {
         FastClick.attach(document.body)
     },
 
+    changePicture: function (event) {
+        event.preventDefault();
+        if (!navigator.camera) {
+            alert("Camera API not supported", "Error");
+            return;
+        }
+        var options = {
+            quality: 50,
+            destinationType: Camera.DestinationType.DATA_URL,
+            sourceType: 1,      // 0:Photo Library, 1=Camera, 2=Saved Album
+            encodingType: 0     // 0=JPG 1=PNG
+        };
+
+        navigator.camera.getPicture(
+            function (imgData) {
+                $('.media-object', this.$el).attr('src', "data:image/jpeg;base64," + imgData);
+            },
+            function () {
+                alert('Error taking picture', 'Error');
+            },
+            options);
+
+        return false;
+    },
 
 
     // Update DOM on a Received Event
-    receivedEvent: function(id) {
+    receivedEvent: function (id) {
         var parentElement = document.getElementById(id);
         var listeningElement = parentElement.querySelector('.listening');
         var receivedElement = parentElement.querySelector('.received');
